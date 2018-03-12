@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>6CAFC0C6-A428-4d30-A9F9-700E829FEA51</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MyApplication</RootNamespace>
+    <AssemblyName>MyApplication</AssemblyName>
+    <Name>SwitchDeveloper</Name>
+    <Author>Rangi Biddle</Author>
+    <CompanyName>Switch IT Pty Ltd</CompanyName>
+    <Copyright>Rangi Biddle</Copyright>
+    <Description />
+    <Guid>c69180a8-969a-4acc-8c29-a59a177636f9</Guid>
+    <VariablesToExport>*</VariablesToExport>
+    <CmdletsToExport>*</CmdletsToExport>
+    <AliasesToExport>*</AliasesToExport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="RegistryFiles\" />
+    <Folder Include="solr\" />
+    <Folder Include="solr\default-index\" />
+    <Folder Include="solr\default-index\conf\" />
+    <Folder Include="solr\default-index\conf\lang\" />
+    <Folder Include="solr\lib\" />
+    <Folder Include="solr\lib\ext\" />
+    <Folder Include="solr\scripts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RegistryFiles\SwitchSyncClient.Registry.reg" />
+    <Compile Include="solr\default-index\conf\currency.xml" />
+    <Compile Include="solr\default-index\conf\lang\stopwords_en.txt" />
+    <Compile Include="solr\default-index\conf\managed-schema" />
+    <Compile Include="solr\default-index\conf\protwords.txt" />
+    <Compile Include="solr\default-index\conf\schema.xml" />
+    <Compile Include="solr\default-index\conf\solrconfig.xml" />
+    <Compile Include="solr\default-index\conf\stopwords.txt" />
+    <Compile Include="solr\default-index\conf\synonyms.txt" />
+    <Compile Include="solr\default-index\conf\_rest_managed.json" />
+    <Compile Include="solr\lib\antlr-runtime-3.5.jar" />
+    <Compile Include="solr\lib\asm-4.1.jar" />
+    <Compile Include="solr\lib\asm-commons-4.1.jar" />
+    <Compile Include="solr\lib\commons-cli-1.2.jar" />
+    <Compile Include="solr\lib\commons-codec-1.10.jar" />
+    <Compile Include="solr\lib\commons-collections-3.2.1.jar" />
+    <Compile Include="solr\lib\commons-configuration-1.6.jar" />
+    <Compile Include="solr\lib\commons-fileupload-1.2.1.jar" />
+    <Compile Include="solr\lib\commons-io-2.4.jar" />
+    <Compile Include="solr\lib\commons-lang-2.6.jar" />
+    <Compile Include="solr\lib\concurrentlinkedhashmap-lru-1.2.jar" />
+    <Compile Include="solr\lib\dom4j-1.6.1.jar" />
+    <Compile Include="solr\lib\ext\att-solr-security.jar" />
+    <Compile Include="solr\lib\ext\commons-io-2.4.jar" />
+    <Compile Include="solr\lib\ext\jcl-over-slf4j-1.7.7.jar" />
+    <Compile Include="solr\lib\ext\jul-to-slf4j-1.7.7.jar" />
+    <Compile Include="solr\lib\ext\log4j-1.2.17.jar" />
+    <Compile Include="solr\lib\ext\slf4j-api-1.7.7.jar" />
+    <Compile Include="solr\lib\ext\slf4j-log4j12-1.7.7.jar" />
+    <Compile Include="solr\lib\ext\yamlbeans-1.10.jar" />
+    <Compile Include="solr\lib\guava-14.0.1.jar" />
+    <Compile Include="solr\lib\hadoop-annotations-2.6.0.jar" />
+    <Compile Include="solr\lib\hadoop-auth-2.6.0.jar" />
+    <Compile Include="solr\lib\hadoop-common-2.6.0.jar" />
+    <Compile Include="solr\lib\hadoop-hdfs-2.6.0.jar" />
+    <Compile Include="solr\lib\hppc-0.5.2.jar" />
+    <Compile Include="solr\lib\htrace-core-3.0.4.jar" />
+    <Compile Include="solr\lib\httpclient-4.3.1.jar" />
+    <Compile Include="solr\lib\httpcore-4.3.jar" />
+    <Compile Include="solr\lib\httpmime-4.3.1.jar" />
+    <Compile Include="solr\lib\joda-time-2.2.jar" />
+    <Compile Include="solr\lib\lucene-analyzers-common-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-analyzers-kuromoji-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-analyzers-phonetic-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-backward-codecs-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-codecs-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-core-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-expressions-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-grouping-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-highlighter-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-join-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-memory-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-misc-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-queries-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-queryparser-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-spatial-5.1.0.jar" />
+    <Compile Include="solr\lib\lucene-suggest-5.1.0.jar" />
+    <Compile Include="solr\lib\noggit-0.6.jar" />
+    <Compile Include="solr\lib\org.restlet-2.1.1.jar" />
+    <Compile Include="solr\lib\org.restlet.ext.servlet-2.1.1.jar" />
+    <Compile Include="solr\lib\protobuf-java-2.5.0.jar" />
+    <Compile Include="solr\lib\solr-core-5.1.0.jar" />
+    <Compile Include="solr\lib\solr-solrj-5.1.0.jar" />
+    <Compile Include="solr\lib\spatial4j-0.4.1.jar" />
+    <Compile Include="solr\lib\stax2-api-3.1.4.jar" />
+    <Compile Include="solr\lib\t-digest-3.0.jar" />
+    <Compile Include="solr\lib\woodstox-core-asl-4.4.1.jar" />
+    <Compile Include="solr\lib\zookeeper-3.4.6.jar" />
+    <Compile Include="solr\scripts\log4j.properties" />
+    <Compile Include="solr\scripts\zkcli.bat" />
+    <Compile Include="solr\scripts\zkcli.sh" />
+    <Compile Include="SwitchDeveloper.psd1" />
+    <Compile Include="SwitchDeveloper.psm1" />
+    <Compile Include="SwitchDeveloper.tests.ps1" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="Build" />
+</Project>

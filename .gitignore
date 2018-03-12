@@ -3,3 +3,5 @@
 ################################################################################
 
 /SwitchDeveloper/RegistryFiles/SwitchSyncClient.Registry.reg
+/packages/Newtonsoft.Json.10.0.2/Newtonsoft.Json.10.0.2.nupkg
+/SwitchDeveloper/SwitchDeveloper.1.0.0.nupkg
