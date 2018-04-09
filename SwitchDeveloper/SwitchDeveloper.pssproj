@@ -16,6 +16,13 @@
     <VariablesToExport>*</VariablesToExport>
     <CmdletsToExport>*</CmdletsToExport>
     <AliasesToExport>*</AliasesToExport>
+    <ClrVersion />
+    <PowerShellHostVersion />
+    <PowerShellVersion>
+    </PowerShellVersion>
+    <ProcessorArchitecture />
+    <RequiredModules>
+    </RequiredModules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

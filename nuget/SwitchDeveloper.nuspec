@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>SwitchDeveloper</id>
+        <version>1.0.0</version>
+        <authors>Rangi Biddle</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Switch Developer PowerShell Module</description>
+    </metadata>
+    <files>
+        <file src="..\SwitchDeveloper\solr\**" target="solr" />
+        <file src="..\SwitchDeveloper\SwitchDeveloper.psd1" target="SwitchDeveloper.psd1" />
+        <file src="..\SwitchDeveloper\SwitchDeveloper.psm1" target="SwitchDeveloper.psm1" />
+    </files>
+</package>

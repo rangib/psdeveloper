@@ -596,6 +596,21 @@ function Get-RegistryKeyValue {
 
 }
 
+function Get-RegistryKeyChildren {
+
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String]$Key
+    )
+
+    process
+    {
+        return Get-ChildItem -Path "Registry::$($Key)" -Recurse
+    }
+
+}
+
 function Set-RegistryKeyPropertyValue {
 
 	param(
@@ -699,6 +714,37 @@ function Enable-Loopback {
 
 }
 
+function Get-SqlServerVersions {
+
+    param()
+
+    begin
+    {
+        $BaseKey = "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server"
+        $InstancesRK = "$($BaseKey)\Instance Names"
+        $InstancesRP = "MSSQLSERVER"
+    }
+
+    process
+    {
+
+        Get-RegistryKeyChildren -Key $InstancesRK | Where-Object { $_.Name -contains "SQL" } | %{
+            Get-RegistryKeyChildren -Key "$($InstancesRK)\$($_.Name)" | %{
+                Write-Host $_.GetType()
+            }
+        }
+
+        #foreach ($instance in (Get-RegistryKeyValue -Key $InstancesRK -Value $InstancesRP))
+        #{
+        #    $InstanceK = "$($BaseKey)\$($instance)\MSSQLServer\CurrentVersion"
+        #    $InstanceP = "CurrentVersion"
+        #
+        #    Write-Host "$($instance) $(Get-RegistryKeyValue $InstanceK -Value $InstanceP)"
+        #}
+    }
+
+}
+
 # Google Drive Database Methods
 
 function Get-SwitchSyncClientProperties {
@@ -756,6 +802,30 @@ function Get-SwitchSyncClientOAuthHeader {
 
 }
 
+function Invoke-SwitchSyncClient {
+
+	param(
+		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
+		[String]$Uri,
+		[String]$Method = "GET",
+		[String]$OutFile
+	)
+
+	process
+	{
+		if ([String]::IsNullOrEmpty($OutFile))
+		{
+			return Invoke-RestMethod -Method "$($Method)" -Uri "$($Uri)" -Headers (Get-SwitchSyncClientOAuthHeader)
+		}
+		else
+		{
+			return Invoke-RestMethod -Method "$($Method)" -Uri "$($Uri)" -Headers (Get-SwitchSyncClientOAuthHeader) -OutFile "$($OutFile)"
+		}
+	}
+
+}
+
 function Get-SwitchSyncClientTeamDriveId {
 
     param(
@@ -767,12 +837,11 @@ function Get-SwitchSyncClientTeamDriveId {
     begin
     {
         $ClientProps = Get-SwitchSyncClientProperties
-        $AuthHeader = Get-SwitchSyncClientOAuthHeader
     }
 
     process
     {
-        $Request = Invoke-RestMethod -Method Get -Uri "$($ClientProps.DriveApiTeamDrivesUri)?useDomainAdminAccess=true&q=name = '$($ClientName)'" -Headers $AuthHeader
+        $Request = Invoke-SwitchSyncClient -Uri "$($ClientProps.DriveApiTeamDrivesUri)?useDomainAdminAccess=true&q=name = '$($ClientName)'"
 
         $TeamDriveId = [String]::Empty
 
@@ -806,14 +875,12 @@ function Get-SwitchSyncClientTeamDriveFoldersForClient {
     begin
     {
         $ClientProps = Get-SwitchSyncClientProperties
-        $AuthHeader = Get-SwitchSyncClientOAuthHeader
         $TeamDriveId = Get-SwitchSyncClientTeamDriveId -ClientName $ClientName
     }
 
     process
     {
-        $Request = Invoke-RestMethod -Method Get -Uri "$($ClientProps.DriveApiUri)?corpora=teamDrive&includeTeamDriveItems=true&q=mimeType = 'application/vnd.google-apps.folder'&supportsTeamDrives=true&teamDriveId=$($TeamDriveId)" -Headers $AuthHeader
-
+        $Request = Invoke-SwitchSyncClient -Uri "$($ClientProps.DriveApiUri)?corpora=teamDrive&includeTeamDriveItems=true&q=mimeType = 'application/vnd.google-apps.folder'&supportsTeamDrives=true&teamDriveId=$($TeamDriveId)"
         $TeamDriveFolders = New-Object System.Collections.ArrayList
 
         if ($Request.files.Count -gt 0)
@@ -852,14 +919,13 @@ function Get-SwitchSyncClientFolderFiles {
 
     begin
     {
-        $AuthHeader = Get-SwitchSyncClientOAuthHeader
         $ClientProps = Get-SwitchSyncClientProperties
         $ClientEnvironmentFolder = Get-SwitchSyncClientTeamDriveFoldersForClient -ClientName $ClientName | Where-Object { $_.Name -eq $Environment } | Select-Object -First 1
     }
 
     process
     {
-        $Request = Invoke-RestMethod -Method Get -Uri "$($ClientProps.DriveApiUri)?corpora=teamDrive&includeTeamDriveItems=true&q='$($ClientEnvironmentFolder.Id)' in parents and mimeType != 'application/vnd.google-apps.folder'&supportsTeamDrives=true&teamDriveId=$($ClientEnvironmentFolder.TeamDriveId)" -Headers $AuthHeader
+        $Request = Invoke-SwitchSyncClient -Uri "$($ClientProps.DriveApiUri)?corpora=teamDrive&includeTeamDriveItems=true&q='$($ClientEnvironmentFolder.Id)' in parents and mimeType != 'application/vnd.google-apps.folder'&supportsTeamDrives=true&teamDriveId=$($ClientEnvironmentFolder.TeamDriveId)"
         
         $ClientFolderFiles = New-Object System.Collections.ArrayList
 
@@ -902,7 +968,6 @@ function Get-SwitchSyncClientDatabaseBackups {
 
     begin
     {
-        $AuthHeader = Get-SwitchSyncClientOAuthHeader
         $ClientProps = Get-SwitchSyncClientProperties
         $ClientEnvironmentFolderFiles = Get-SwitchSyncClientFolderFiles -ClientName $ClientName -Environment $Environment
 
@@ -950,7 +1015,7 @@ function Get-SwitchSyncClientDatabaseBackups {
     process
     {
         $FilesToRetrieve | %{
-            Invoke-WebRequest -Method Get -Uri "$($ClientProps.DriveApiUri)/$($_.Id)?alt=media&supportsTeamDrives=true" -Headers $AuthHeader -OutFile "$($OutLocation)\$($_.Name)"
+            Invoke-SwitchSyncClient -Uri "$($ClientProps.DriveApiUri)/$($_.Id)?alt=media&supportsTeamDrives=true" -OutFile "$($OutLocation)\$($_.Name)"
         }
 
 		return ($FilesToRetrieve | Select-Object -ExpandProperty Name)
@@ -976,6 +1041,14 @@ function Restore-SwitchSyncClientDatabases {
 	begin
 	{
 		$RetrievedFiles = @()
+
+		if ([String]::IsNullOrEmpty($OutLocation))
+		{
+			$OutLocation = Get-RegistryKeyValue -Key "HKLM\Software\Microsoft\MSSQLServer\MSSQLServer" -Value "BackupDirectory"
+		}
+
+        Write-Host $OutLocation
+        break
 
 		if ($Latest -eq $true)
 		{
@@ -1236,5 +1309,67 @@ function Compare-SitecoreConfiguration {
         }
 
     }
+
+}
+
+# Visual Studio Methods
+
+function New-PublishProfiles {
+
+	param(
+	    [Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
+		[string]$SourceFolderPath,
+		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
+		[string]$PublishProfileName,
+		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
+		[string]$GlobalPublishProfilePath
+	)
+
+	process
+	{
+		$ChildWebProjects = Get-ChildItem -Path $SourceFolderPath -Recurse -Filter "*.csproj" | %{
+    
+			$projectFolder = $_.DirectoryName
+			$projectPropertiesFolder = "$($projectFolder)\Properties"
+			$projectPublishProfilesFolder = "$($projectPropertiesFolder)\PublishProfiles"
+			$projectPublishProfile = "$($projectPublishProfilesFolder)\$($PublishProfileName).pubxml"
+
+			if (!(Test-Path -Path $projectPropertiesFolder))
+			{
+				New-Item -Path $projectPropertiesFolder -ItemType Directory
+			}
+
+			if (!(Test-Path -Path $projectPublishProfilesFolder))
+			{
+				New-Item -Path $projectPublishProfilesFolder -ItemType Directory
+			}
+
+			$xmlWriter = New-Object System.Xml.XmlTextWriter($projectPublishProfile, [System.Text.Encoding]::UTF8)
+			$xmlWriter.Formatting = "Indented"
+			$xmlWriter.Indentation = "4"
+
+			$xmlWriter.WriteStartDocument()
+
+			$xmlWriter.WriteStartElement("Project", "http://schemas.microsoft.com/developer/msbuild/2003")
+    
+				$xmlWriter.WriteAttributeString($null, "ToolsVersion", $null, "4.0")
+
+				$xmlWriter.WriteStartElement("Import")
+				$xmlWriter.WriteAttributeString($null, "Project", $null, $GlobalPublishSettingsFilePath)
+				$xmlWriter.WriteEndElement()
+
+			$xmlWriter.WriteEndElement()
+
+			$xmlWriter.WriteEndDocument()
+
+			$xmlWriter.Finalize
+			$xmlWriter.Flush()
+			$xmlWriter.Close()
+
+		}
+	}
 
 }
